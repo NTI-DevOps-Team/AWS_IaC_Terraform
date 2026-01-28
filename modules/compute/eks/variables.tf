@@ -22,6 +22,11 @@ variable "min_size" {
   description = "Minimum number of worker nodes"
   type        = number
 }
+variable "max_unavailable" {
+  description = "Maximum number of unavailable nodes during update"
+  type        = number
+
+}
 variable "instance_type" {
   description = "EC2 instance type for the worker nodes"
   type        = string

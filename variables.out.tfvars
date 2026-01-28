@@ -13,7 +13,7 @@ subnets = {
     cidr            = "10.0.1.0/24"
     az_name         = "us-east-1a"
     public_ip       = true
-    enable_eks_tags = true
+    enable_eks_tags = false
   }
 
   private_subnet_1 = {
@@ -37,7 +37,7 @@ subnets = {
     cidr            = "10.0.4.0/24"
     az_name         = "us-east-1b"
     public_ip       = false
-    enable_eks_tags = false
+    enable_eks_tags = true
   }
 
   public_subnet_3 = {
@@ -53,10 +53,23 @@ subnets = {
     cidr            = "10.0.6.0/24"
     az_name         = "us-east-1c"
     public_ip       = false
-    enable_eks_tags = false
+    enable_eks_tags = true
   }
 }
 
 #EKS cluster variables
 cluster_name = "my-eks-cluster"
-subnet_ids   = module.vpc.private_subnet_ids
+
+#Node group variables
+
+desired_capacity = 2
+max_size         = 4
+min_size         = 1
+max_unavailable  = 1
+instance_type    = "t3.micro"
+ami_type         = "AL2_x86_64"
+disk_size        = 20
+capacity_type    = "ON_DEMAND"
+ec2_ssh_key      = "my-eks-keypair"
+
+

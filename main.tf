@@ -5,13 +5,14 @@ module "network" {
   subnets  = var.subnets
 }
 
-module "eks_cluster" {
+module "compute" {
   source           = "./modules/compute/eks"
   cluster_name     = var.cluster_name
   subnet_ids       = module.network.private_subnet_ids
   desired_capacity = var.desired_capacity
   max_size         = var.max_size
   min_size         = var.min_size
+  max_unavailable  = var.max_unavailable
   instance_type    = var.instance_type
   ami_type         = var.ami_type
   disk_size        = var.disk_size

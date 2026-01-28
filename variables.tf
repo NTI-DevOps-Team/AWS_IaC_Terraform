@@ -34,10 +34,6 @@ variable "cluster_name" {
   description = "The name of the EKS cluster"
   type        = string
 }
-variable "subnet_ids" {
-  description = "List of subnet IDs for the EKS cluster"
-  type        = list(string)
-}
 
 
 #Node group variables
@@ -51,6 +47,10 @@ variable "max_size" {
 }
 variable "min_size" {
   description = "Minimum number of worker nodes"
+  type        = number
+}
+variable "max_unavailable" {
+  description = "Maximum number of nodes that can be unavailable during an update"
   type        = number
 }
 variable "instance_type" {

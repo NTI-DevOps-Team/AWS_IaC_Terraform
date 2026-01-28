@@ -1,10 +1,10 @@
 output "eks" {
   description = "EKS cluster information"
   value = {
-    cluster_name                       = aws_eks_cluster.eks_cluster.name
-    cluster_endpoint                   = aws_eks_cluster.eks_cluster.endpoint
-    cluster_certificate_authority_data = aws_eks_cluster.eks_cluster.certificate_authority[0].data
-    cluster_arn                        = aws_eks_cluster.eks_cluster.arn
+    cluster_name                       = aws_eks_cluster.my_eks_cluster.name
+    cluster_endpoint                   = aws_eks_cluster.my_eks_cluster.endpoint
+    cluster_certificate_authority_data = aws_eks_cluster.my_eks_cluster.certificate_authority[0].data
+    cluster_arn                        = aws_eks_cluster.my_eks_cluster.arn
   }
 
 }
