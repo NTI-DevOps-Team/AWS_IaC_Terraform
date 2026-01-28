@@ -18,9 +18,19 @@ resource "aws_subnet" "subnets" {
   availability_zone       = each.value.az_name
   map_public_ip_on_launch = each.value.public_ip
 
-  tags = {
-    Name = "${each.value.subnet_name}_${each.value.az_name}"
-  }
+  tags = merge(
+    {
+      Name = "${each.value.subnet_name}_${each.value.az_name}"
+    },
+
+    each.value.enable_eks_tags && each.value.public_ip ? {
+      "kubernetes.io/role/elb" = "1"
+    } : {},
+
+    each.value.enable_eks_tags && !each.value.public_ip ? {
+      "kubernetes.io/role/internal-elb" = "1"
+    } : {}
+  )
 }
 
 #create Internet Gateway

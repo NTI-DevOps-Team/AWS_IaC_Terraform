@@ -17,9 +17,10 @@ variable "vpc_cidr" {
 variable "subnets" {
   description = "A map of subnets to create with their CIDR blocks and availability zones"
   type = map(object({
-    subnet_name = string
-    cidr        = string
-    az_name     = string
-    public_ip   = bool
+    subnet_name     = string
+    cidr            = string
+    az_name         = string
+    public_ip       = bool
+    enable_eks_tags = bool
   }))
 }
