@@ -32,30 +32,14 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Create Regional NAT Gateway with auto 
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
-
-  tags = {
-    Name = "${var.vpc_name}_nat_eip"
-  }
-
-  depends_on = [aws_internet_gateway.igw]
-}
-
-locals {
-  public_subnets = {
-    for k, v in var.subnets : k => v if v.public_ip
-  }
-}
-
+# Create Regional NAT Gateway with auto mode
 resource "aws_nat_gateway" "regional_nat_gw" {
-  allocation_id     = aws_eip.nat_eip.id
-  subnet_id         = aws_subnet.subnets[keys(local.public_subnets)[0]].id
+  vpc_id            = aws_vpc.vpc.id
+  connectivity_type = "public"
   availability_mode = "regional"
 
   tags = {
-    Name = "${var.vpc_name}_regional_nat_gw"
+    Name = "${var.vpc_name}_regional_nat_gw_auto_mode"
   }
 
   depends_on = [aws_internet_gateway.igw]
