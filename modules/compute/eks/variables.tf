@@ -1,46 +1,15 @@
-# Variable definitions for AWS VPC, Subnets and EKS configuration
-#provider variables
-variable "region" {
-  description = "The AWS region to deploy resources in"
-  type        = string
-}
-
-#VPC variables
-variable "vpc_name" {
-  description = "The name of the VPC"
-  type        = string
-
-}
-
-variable "vpc_cidr" {
-  description = "The CIDR block for the VPC"
-  type        = string
-}
-
-#Subnet variables
-variable "subnets" {
-  description = "A map of subnets to create with their CIDR blocks and availability zones"
-  type = map(object({
-    subnet_name     = string
-    cidr            = string
-    az_name         = string
-    public_ip       = bool
-    enable_eks_tags = bool
-  }))
-}
-
-#EKS cluster variables
+#cluster variables
 variable "cluster_name" {
   description = "The name of the EKS cluster"
   type        = string
 }
+
 variable "subnet_ids" {
   description = "List of subnet IDs for the EKS cluster"
   type        = list(string)
 }
 
-
-#Node group variables
+#node group variables
 variable "desired_capacity" {
   description = "Desired number of worker nodes"
   type        = number
@@ -73,3 +42,4 @@ variable "ec2_ssh_key" {
   description = "The EC2 SSH key pair name for accessing the worker nodes"
   type        = string
 }
+

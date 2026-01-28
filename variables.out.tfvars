@@ -1,6 +1,12 @@
-region   = "us-east-1"
+# AWS VPC, Subnets and EKS configuration
+#provider variables
+region = "us-east-1"
+
+#VPC variables
 vpc_name = "my-vpc"
 vpc_cidr = "10.0.0.0/16"
+
+#Subnet variables
 subnets = {
   public_subnet_1 = {
     subnet_name     = "public-subnet-1"
@@ -50,3 +56,7 @@ subnets = {
     enable_eks_tags = false
   }
 }
+
+#EKS cluster variables
+cluster_name = "my-eks-cluster"
+subnet_ids   = module.vpc.private_subnet_ids

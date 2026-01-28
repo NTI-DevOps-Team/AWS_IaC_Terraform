@@ -15,4 +15,21 @@ output "subnet_ids" {
   }
 }
 
+output "private_subnet_ids" {
+  description = "Private subnet IDs for EKS"
+  value = [
+    for s in aws_subnet.subnets :
+    s.id
+    if s.map_public_ip_on_launch == false
+  ]
+}
+output "public_subnet_ids" {
+  description = "Public subnet IDs for EKS"
+  value = [
+    for s in aws_subnet.subnets :
+    s.id
+    if s.map_public_ip_on_launch == true
+  ]
+}
+
 
