@@ -33,6 +33,9 @@ resource "aws_internet_gateway" "igw" {
 }
 
 # Create Regional NAT Gateway with auto mode
+
+data "aws_availability_zones" "available" {}
+
 resource "aws_nat_gateway" "regional_nat_gw" {
   vpc_id            = aws_vpc.vpc.id
   connectivity_type = "public"
