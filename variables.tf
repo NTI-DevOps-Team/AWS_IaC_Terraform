@@ -1,3 +1,8 @@
+variable "region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+}
+
 variable "vpc_name" {
   description = "The name of the VPC"
   type        = string
