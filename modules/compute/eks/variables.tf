@@ -8,6 +8,10 @@ variable "subnet_ids" {
   description = "List of subnet IDs for the EKS cluster"
   type        = list(string)
 }
+variable "eks_cluster_depends_on" {
+  description = "List of resources the EKS cluster depends on"
+  type        = list(any)
+}
 
 #node group variables
 variable "desired_capacity" {
@@ -43,8 +47,12 @@ variable "capacity_type" {
   description = "The capacity type for the worker nodes (ON_DEMAND or SPOT)"
   type        = string
 }
+variable "eks_nodegroup_depends_on" {
+  description = "List of resources the EKS node group depends on"
+  type        = list(any)
+}
+
 variable "ec2_ssh_key" {
   description = "The EC2 SSH key pair name for accessing the worker nodes"
   type        = string
 }
-

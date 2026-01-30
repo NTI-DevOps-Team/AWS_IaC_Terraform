@@ -29,12 +29,37 @@ variable "subnets" {
   }))
 }
 
+# Security group variables
+variable "sg" {
+  description = "A map of security groups to create"
+  type = map(object({
+    name        = string
+    description = string
+    inbound_rules = map(object({
+      protocol  = string
+      from_port = number
+      to_port   = number
+      cidr_ipv4 = string
+    }))
+    outbound_rules = map(object({
+      protocol  = string
+      from_port = number
+      to_port   = number
+      cidr_ipv4 = string
+    }))
+    }
+  ))
+}
+
 #EKS cluster variables
 variable "cluster_name" {
   description = "The name of the EKS cluster"
   type        = string
 }
-
+variable "eks_cluster_depends_on" {
+  description = "List of resources the EKS cluster depends on"
+  type        = list(any)
+}
 
 #Node group variables
 variable "desired_capacity" {
@@ -72,4 +97,8 @@ variable "capacity_type" {
 variable "ec2_ssh_key" {
   description = "The EC2 SSH key pair name for accessing the worker nodes"
   type        = string
+}
+variable "eks_nodegroup_depends_on" {
+  description = "List of resources the EKS node group depends on"
+  type        = list(any)
 }

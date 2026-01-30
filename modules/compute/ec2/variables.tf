@@ -27,3 +27,8 @@ variable "instance_type" {
   description = "EC2 instance type for the instance"
   type        = string
 }
+
+variable "bootstrap_script" {
+  description = "Path to the bootstrap script for EC2 user_data"
+  type        = string
+}

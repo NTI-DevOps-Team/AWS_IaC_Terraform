@@ -42,21 +42,25 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Create Regional NAT Gateway with auto mode
-
-data "aws_availability_zones" "available" {}
-
-resource "aws_nat_gateway" "regional_nat_gw" {
-  vpc_id            = aws_vpc.vpc.id
-  connectivity_type = "public"
-  availability_mode = "regional"
+# Create elastic IP for NAT Gateway
+resource "aws_eip" "nat_eip" {
+  for_each = local.public_subnet
+  domain   = "vpc"
 
   tags = {
-    Name = "${var.vpc_name}_regional_nat_gw_auto_mode"
+    Name = "${var.vpc_name}_nat_eip"
   }
-
-  depends_on = [aws_internet_gateway.igw]
 }
+# Create NAT Gateway
+resource "aws_nat_gateway" "nat_gw" {
+  for_each      = local.public_subnet
+  allocation_id = aws_eip.nat_eip[each.key].id
+  subnet_id     = aws_subnet.subnets[each.key].id
+  tags = {
+    Name = "${var.vpc_name}_nat_gw_${each.value.az_name}"
+  }
+}
+
 
 
 # Create Route Tables
@@ -74,15 +78,13 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_route_table" "private_route_table" {
-  for_each = {
-    for k, v in var.subnets : k => v if !v.public_ip
-  }
+  for_each = local.private_subnet
 
   vpc_id = aws_vpc.vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.regional_nat_gw.id
+    nat_gateway_id = aws_nat_gateway.nat_gw[each.value.n].id
   }
 
   tags = {
@@ -93,20 +95,44 @@ resource "aws_route_table" "private_route_table" {
 
 # Associate Subnets with Route Tables
 resource "aws_route_table_association" "public_subnet_association" {
-  for_each = {
-    for k, v in var.subnets : k => v if v.public_ip
-  }
+  for_each = local.public_subnet
 
   subnet_id      = aws_subnet.subnets[each.key].id
   route_table_id = aws_route_table.public_route_table.id
 }
 
 resource "aws_route_table_association" "private_subnet_association" {
-  for_each = {
-    for k, v in var.subnets : k => v if !v.public_ip
-  }
+  for_each = local.private_subnet
 
   subnet_id      = aws_subnet.subnets[each.key].id
   route_table_id = aws_route_table.private_route_table[each.key].id
 }
 
+# create Security Group
+resource "aws_security_group" "vpc_sg" {
+  for_each    = var.sg
+  name        = "${each.value.name}_sg"
+  description = each.value.description
+  vpc_id      = aws_vpc.vpc.id
+  tags = {
+    Name = "${each.value.name}_sg"
+  }
+}
+# Ingress rule to allow inbound traffic within the security group
+resource "aws_vpc_security_group_ingress_rule" "inbound_rules" {
+  for_each          = local.inbound_rules
+  security_group_id = aws_security_group.vpc_sg[each.key].id
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  ip_protocol       = each.value.protocol
+  cidr_ipv4         = each.value.cidr_ipv4
+}
+# Egress rule to allow outbound traffic within the security group
+resource "aws_vpc_security_group_egress_rule" "outbound_rules" {
+  for_each          = local.outbound_rules
+  security_group_id = aws_security_group.vpc_sg[each.key].id
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  ip_protocol       = each.value.protocol
+  cidr_ipv4         = each.value.cidr_ipv4
+}

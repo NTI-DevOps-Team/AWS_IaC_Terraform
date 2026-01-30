@@ -19,9 +19,7 @@ resource "aws_eks_cluster" "my_eks_cluster" {
     Name = var.cluster_name
   }
 
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_AmazonEKSClusterPolicy
-  ]
+  depends_on = var.eks_cluster_depends_on
 
 }
 
@@ -49,25 +47,15 @@ resource "aws_eks_node_group" "my_node_group" {
   capacity_type  = var.capacity_type
 
   remote_access {
-    ec2_ssh_key = aws_key_pair.eks_key.key_name
+    ec2_ssh_key = var.ec2_ssh_key
   }
 
   tags = {
     Name = "${var.cluster_name}-eks-node"
   }
 
-  depends_on = [
-    aws_eks_cluster.my_eks_cluster,
-    aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.node_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly,
-    aws_key_pair.eks_key
-  ]
+  depends_on = var.eks_nodegroup_depends_on
 }
 
-#Create EC2 Key Pair for SSH access to EKS worker nodes
-resource "aws_key_pair" "eks_key" {
-  key_name   = var.ec2_ssh_key
-  public_key = file("~/.ssh/id_rsa.pub")
-}
+
 
